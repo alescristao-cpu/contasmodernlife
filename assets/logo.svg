@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="primaryGreenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2E6B42" />
+      <stop offset="100%" stop-color="#1F4D30" />
+    </linearGradient>
+    <linearGradient id="accentGreenGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3A8A56" />
+      <stop offset="100%" stop-color="#2E6B42" />
+    </linearGradient>
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1F4D30" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  
+  <!-- Icon Group -->
+  <g transform="translate(10, 10)">
+    <!-- Outer Shield / Eco Ring -->
+    <path d="M 50,5 C 75,5 95,20 95,50 C 95,80 70,95 50,98 C 30,95 5,80 5,50 C 5,20 25,5 50,5 Z" 
+          fill="url(#primaryGreenGrad)" filter="url(#subtleShadow)" />
+    
+    <!-- Inner Leaf & Modern Building Silhouettes -->
+    <!-- Building 1 -->
+    <rect x="26" y="42" width="18" height="42" rx="3" fill="#FFFFFF" opacity="0.95" />
+    <!-- Building 2 (Taller) -->
+    <rect x="48" y="28" width="22" height="56" rx="3" fill="#FFFFFF" />
+    
+    <!-- Building Windows -->
+    <rect x="31" y="48" width="8" height="6" rx="1" fill="#2E6B42" opacity="0.8" />
+    <rect x="31" y="58" width="8" height="6" rx="1" fill="#2E6B42" opacity="0.8" />
+    <rect x="31" y="68" width="8" height="6" rx="1" fill="#2E6B42" opacity="0.8" />
+    
+    <rect x="54" y="34" width="10" height="7" rx="1" fill="#1F4D30" opacity="0.85" />
+    <rect x="54" y="45" width="10" height="7" rx="1" fill="#1F4D30" opacity="0.85" />
+    <rect x="54" y="56" width="10" height="7" rx="1" fill="#1F4D30" opacity="0.85" />
+    <rect x="54" y="67" width="10" height="7" rx="1" fill="#1F4D30" opacity="0.85" />
+
+    <!-- Eco Leaf Curve Overlay -->
+    <path d="M 18,75 C 30,92 65,92 82,75 C 70,82 40,82 25,65 Z" fill="url(#accentGreenGrad)" />
+  </g>
+
+  <!-- Brand Typography -->
+  <text x="120" y="52" font-family="'Plus Jakarta Sans', 'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="30" fill="#1F4D30" letter-spacing="-0.5">
+    MODERN LIFE
+  </text>
+  <text x="120" y="80" font-family="'Plus Jakarta Sans', 'Inter', 'Segoe UI', sans-serif" font-weight="600" font-size="20" fill="#2E6B42" letter-spacing="2">
+    RESIDENCE
+  </text>
+  <text x="120" y="98" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="500" font-size="11" fill="#666666" letter-spacing="1">
+    PORTAL DA TRANSPARÊNCIA
+  </text>
+</svg>

@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Life Residence - Portal da Transparência & Prestação de Contas</title>
+  <meta name="description" content="Portal oficial de transparência, prestação de contas, balancetes e gestão do condomínio Modern Life Residence." />
+  
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#2E6B42" />
+
+  <!-- Fonts & Icon Libraries -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Chart.js for Financial Data Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo.svg" alt="Modern Life Residence" class="sidebar-logo" />
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">Navegação Principal</div>
+        
+        <a class="nav-link active" data-target="dashboardView">
+          <i class="fas fa-chart-line"></i>
+          <span>Página Inicial</span>
+        </a>
+
+        <a class="nav-link" data-target="prestacaoView">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Prestação de Contas</span>
+        </a>
+
+        <a class="nav-link" data-target="balancetesView">
+          <i class="fas fa-balance-scale"></i>
+          <span>Balancetes</span>
+        </a>
+
+        <a class="nav-link" data-target="contratosView">
+          <i class="fas fa-file-signature"></i>
+          <span>Contratos</span>
+        </a>
+
+        <a class="nav-link" data-target="transparenciaView">
+          <i class="fas fa-chart-pie"></i>
+          <span>Transparência</span>
+        </a>
+
+        <a class="nav-link" data-target="documentosView">
+          <i class="fas fa-folder-open"></i>
+          <span>Biblioteca de Docs</span>
+        </a>
+
+        <div class="menu-category">Comunicação & Serviços</div>
+
+        <a class="nav-link" data-target="blogView">
+          <i class="fas fa-newspaper"></i>
+          <span>Blog do Síndico</span>
+        </a>
+
+        <a class="nav-link" data-target="reclamacoesView">
+          <i class="fas fa-bullhorn"></i>
+          <span>Ouvidoria / Reclamações</span>
+        </a>
+
+        <a class="nav-link" data-target="reservasView">
+          <i class="fas fa-calendar-check"></i>
+          <span>Utilidades & Reservas</span>
+        </a>
+
+        <a class="nav-link" data-target="agendaView">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Agenda do Condomínio</span>
+        </a>
+
+        <a class="nav-link" data-target="galeriaView">
+          <i class="fas fa-images"></i>
+          <span>Galeria de Fotos</span>
+        </a>
+
+        <!-- Admin Exclusive Category -->
+        <div class="menu-category" id="adminMenuCategory" style="display: none;">Administração</div>
+        <a class="nav-link" data-target="adminView" id="adminNavLink" style="display: none;">
+          <i class="fas fa-user-shield"></i>
+          <span>Painel Administrativo</span>
+          <span class="badge-count" id="adminPendingBadge" style="display: none;">0</span>
+        </a>
+      </nav>
+
+      <!-- Quick Demo Switcher Widget for Evaluation -->
+      <div style="padding: 0.75rem 1rem; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem;">
+        <span style="color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px; font-weight: 600;">Seletor de Perfil Demo:</span>
+        <div style="display: flex; gap: 4px;">
+          <button onclick="window.authManager.switchDemoUser('admin')" class="btn btn-sm" style="padding: 2px 6px; font-size: 0.7rem; background: var(--color-primary);">Admin</button>
+          <button onclick="window.authManager.switchDemoUser('conselheiro')" class="btn btn-sm" style="padding: 2px 6px; font-size: 0.7rem; background: #3B82F6;">Conselho</button>
+          <button onclick="window.authManager.switchDemoUser('morador')" class="btn btn-sm" style="padding: 2px 6px; font-size: 0.7rem; background: #10B981;">Morador</button>
+        </div>
+      </div>
+
+      <!-- Current User Profile Footbar -->
+      <div class="sidebar-user" id="sidebarUserCard" style="display: none;">
+        <div class="user-avatar" id="userAvatarDisplay">C</div>
+        <div class="user-details">
+          <div class="user-name" id="userNameDisplay">Carlos Silva</div>
+          <div class="user-role" id="userRoleDisplay">ADMINISTRADOR</div>
+        </div>
+        <button class="btn-logout" onclick="window.authManager.logout()" title="Sair do Portal">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      
+      <!-- Top Navbar Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="global-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="globalSearchInput" placeholder="Pesquisar documentos, contratos, atas..." />
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Dark Mode Toggle Button -->
+          <button class="icon-btn" onclick="window.app.toggleDarkMode()" title="Alternar Modo Escuro">
+            <i class="fas fa-moon" id="darkModeIcon"></i>
+          </button>
+
+          <!-- Notification Drawer Button -->
+          <div style="position: relative;">
+            <button class="icon-btn" id="notifyBtn" title="Notificações">
+              <i class="fas fa-bell"></i>
+              <span class="notify-badge"></span>
+            </button>
+            <div class="notifications-dropdown" id="notificationsDropdown">
+              <div class="dropdown-header">
+                <strong>Notificações Recentes</strong>
+                <span style="font-size: 0.75rem; color: var(--color-primary); cursor: pointer;">Limpar</span>
+              </div>
+              <div class="dropdown-body">
+                <div class="notification-item unread">
+                  <i class="fas fa-file-invoice-dollar" style="color: var(--color-primary);"></i>
+                  <div>
+                    <strong style="font-size: 0.85rem;">Balancete de Junho Publicado</strong>
+                    <p style="font-size: 0.78rem; color: var(--text-muted);">Confira a prestação de contas mensal.</p>
+                  </div>
+                </div>
+                <div class="notification-item">
+                  <i class="fas fa-calendar-alt" style="color: #3B82F6;"></i>
+                  <div>
+                    <strong style="font-size: 0.85rem;">Próxima Assembleia Geral</strong>
+                    <p style="font-size: 0.78rem; color: var(--text-muted);">Agendada para 20 de Agosto no Salão.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Header Login / Account Button -->
+          <button class="btn btn-primary btn-sm" id="headerLoginBtn" onclick="document.getElementById('authModal').classList.add('active')">
+            <i class="fas fa-user-lock"></i> Entrar / Cadastrar
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Body Container -->
+      <main class="content-body">
+
+        <!-- ==================== DASHBOARD VIEW ==================== -->
+        <section class="page-section active" id="dashboardView">
+          
+          <!-- Welcome Hero Banner -->
+          <div class="condo-hero-banner">
+            <div class="banner-text">
+              <span class="banner-badge">Portal da Transparência</span>
+              <h2>Bem-vindo ao Modern Life Residence</h2>
+              <p>Gestão condominial 100% transparente, moderna e acessível aos moradores.</p>
+            </div>
+            <img src="assets/logo.svg" alt="Logo" style="height: 100px; filter: brightness(0) invert(1); opacity: 0.85;" />
+          </div>
+
+          <!-- KPI Summary Grid -->
+          <div class="card-grid">
+            <div class="card kpi-card">
+              <div class="kpi-icon"><i class="fas fa-wallet"></i></div>
+              <div class="kpi-info">
+                <h3>Último Balancete (Junho)</h3>
+                <div class="kpi-value" id="dashUltimoBalanceteVal">R$ 33.350,00</div>
+                <div class="kpi-subtext" id="dashUltimoBalanceteSub"><i class="fas fa-check-circle"></i> Saldo positivo consolidado</div>
+              </div>
+            </div>
+
+            <div class="card kpi-card">
+              <div class="kpi-icon" style="color: #3B82F6; background: rgba(59, 130, 246, 0.1);"><i class="fas fa-bullhorn"></i></div>
+              <div class="kpi-info">
+                <h3>Ouvidoria & Chamados</h3>
+                <div class="kpi-value" id="dashChamadosAbertosVal">1 Chamado</div>
+                <div class="kpi-subtext" style="color: #3B82F6;"><i class="fas fa-clock"></i> Em atendimento pelo síndico</div>
+              </div>
+            </div>
+
+            <div class="card kpi-card">
+              <div class="kpi-icon" style="color: #F59E0B; background: rgba(245, 158, 11, 0.1);"><i class="fas fa-gavel"></i></div>
+              <div class="kpi-info">
+                <h3>Próxima Assembleia</h3>
+                <div class="kpi-value" id="dashProximaAssembleiaVal" style="font-size: 1.25rem;">20/08/2026</div>
+                <div class="kpi-subtext" style="color: #F59E0B;"><i class="fas fa-calendar"></i> Ordinária - Salão de Festas</div>
+              </div>
+            </div>
+
+            <div class="card kpi-card">
+              <div class="kpi-icon" style="color: #8B5CF6; background: rgba(139, 92, 246, 0.1);"><i class="fas fa-folder-open"></i></div>
+              <div class="kpi-info">
+                <h3>Documentos & Atas</h3>
+                <div class="kpi-value" id="dashDocRecentesVal">5 Arquivos</div>
+                <div class="kpi-subtext" style="color: #8B5CF6;"><i class="fas fa-download"></i> Disponíveis para download</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Content Grid -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+            <div>
+              <div class="card-header" style="background: none; padding: 0 0 0.75rem 0;">
+                <h3 class="card-title"><i class="fas fa-newspaper" style="color: var(--color-primary);"></i> Últimos Comunicados do Síndico</h3>
+              </div>
+              <div id="dashComunicadosList"></div>
+            </div>
+
+            <div>
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fas fa-bolt" style="color: var(--color-primary);"></i> Ações Rápidas</h3>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                  <button onclick="window.app.navigateTo('reservasView')" class="btn btn-secondary" style="justify-content: flex-start;">
+                    <i class="fas fa-calendar-plus" style="color: var(--color-primary);"></i> Reservar Salão / Churrasqueira
+                  </button>
+                  <button onclick="window.app.navigateTo('reclamacoesView')" class="btn btn-secondary" style="justify-content: flex-start;">
+                    <i class="fas fa-comment-alt" style="color: #3B82F6;"></i> Abrir Reclamação / Sugestão
+                  </button>
+                  <button onclick="window.app.navigateTo('documentosView')" class="btn btn-secondary" style="justify-content: flex-start;">
+                    <i class="fas fa-file-pdf" style="color: #EF4444;"></i> Baixar Regimento Interno
+                  </button>
+                  <a href="https://wa.me/5511987654321?text=Olá%20Síndico,%20gostaria%20de%20falar%20sobre%20o%20condomínio" target="_blank" class="btn btn-success" style="justify-content: flex-start;">
+                    <i class="fab fa-whatsapp"></i> Falar com o Síndico via WhatsApp
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== PRESTAÇÃO DE CONTAS & BALANCETES VIEW ==================== -->
+        <section class="page-section" id="prestacaoView">
+          <div class="page-title-box">
+            <div>
+              <h1><i class="fas fa-file-invoice-dollar"></i> Prestação de Contas Mensal</h1>
+              <p>Histórico financeiro detalhado do condomínio Modern Life Residence</p>
+            </div>
+            <div>
+              <button onclick="window.exportManager.exportToCSV('Prestacao_Contas_ModernLife_2026', window.dbStore.get('BALANCETES'))" class="btn btn-secondary">
+                <i class="fas fa-file-excel" style="color: #059669;"></i> Exportar Relatório Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label><i class="fas fa-filter"></i> Ano:</label>
+              <select id="filterAnoBalancete" class="form-select" onchange="window.app.renderBalancetes()">
+                <option value="all">Todos os Anos</option>
+                <option value="2026" selected>2026</option>
+                <option value="2025">2025</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Mês:</label>
+              <select id="filterMesBalancete" class="form-select" onchange="window.app.renderBalancetes()">
+                <option value="all">Todos os Meses</option>
+                <option value="janeiro">Janeiro</option>
+                <option value="fevereiro">Fevereiro</option>
+                <option value="marco">Março</option>
+                <option value="abril">Abril</option>
+                <option value="maio">Maio</option>
+                <option value="junho">Junho</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Balancetes Table -->
+          <div class="table-container">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Mês / Ano</th>
+                  <th>Receita Total</th>
+                  <th>Despesa Executada</th>
+                  <th>Saldo Líquido</th>
+                  <th>Status de Aprovação</th>
+                  <th style="text-align: right;">Ações & Downloads</th>
+                </tr>
+              </thead>
+              <tbody id="balancetesTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Balancetes View Alias -->
+        <section class="page-section" id="balancetesView">
+          <div class="page-title-box">
+            <h1><i class="fas fa-balance-scale"></i> Balancetes Consolidados</h1>
+            <p>Lista de balancetes aprovados pelo conselho fiscal do condomínio</p>
+          </div>
+        </section>
+
+        <!-- ==================== CONTRATOS VIEW ==================== -->
+        <section class="page-section" id="contratosView">
+          <div class="page-title-box">
+            <div>
+              <h1><i class="fas fa-file-signature"></i> Contratos Firmados</h1>
+              <p>Transparência com os prestadores de serviços e fornecedores do condomínio</p>
+            </div>
+            ${window.authManager.isAdmin() ? `
+              <button onclick="document.getElementById('modalContrato').classList.add('active')" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Novo Contrato
+              </button>
+            ` : ''}
+          </div>
+
+          <div class="card-grid" id="contratosGrid"></div>
+        </section>
+
+        <!-- ==================== TRANSPARÊNCIA FINANCEIRA VIEW ==================== -->
+        <section class="page-section" id="transparenciaView">
+          <div class="page-title-box">
+            <h1><i class="fas fa-chart-pie"></i> Painel de Transparência Financeira</h1>
+            <p>Demonstrativos visuais e gráficos das contas do Modern Life Residence</p>
+          </div>
+
+          <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-chart-pie" style="color: var(--color-primary);"></i> Gastos por Categoria (Último Mês)</h3>
+              </div>
+              <div style="height: 320px;">
+                <canvas id="chartCategory"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-chart-bar" style="color: var(--color-primary);"></i> Receita vs Despesa (2026)</h3>
+              </div>
+              <div style="height: 320px;">
+                <canvas id="chartRevenueVsExpense"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-chart-line" style="color: var(--color-primary);"></i> Evolução do Saldo do Condomínio</h3>
+            </div>
+            <div style="height: 300px;">
+              <canvas id="chartBalanceEvolution"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== BIBLIOTECA DE DOCUMENTOS VIEW ==================== -->
+        <section class="page-section" id="documentosView">
+          <div class="page-title-box">
+            <h1><i class="fas fa-folder-open"></i> Biblioteca de Documentos</h1>
+            <p>Download direto de convenção, regimento interno, manuais e atas de assembleia</p>
+          </div>
+
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label>Categoria:</label>
+              <select id="filterDocCategory" class="form-select" onchange="window.app.renderDocumentos()">
+                <option value="all">Todas as Categorias</option>
+                <option value="Convenção">Convenção</option>
+                <option value="Regimento Interno">Regimento Interno</option>
+                <option value="Manual do Proprietário">Manual do Proprietário</option>
+                <option value="Atas">Atas de Assembleia</option>
+                <option value="Comunicados">Comunicados</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Nome do Documento</th>
+                  <th>Categoria</th>
+                  <th>Data de Publicação</th>
+                  <th>Tamanho</th>
+                  <th style="text-align: right;">Download</th>
+                </tr>
+              </thead>
+              <tbody id="documentosListBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ==================== BLOG DO SÍNDICO VIEW ==================== -->
+        <section class="page-section" id="blogView">
+          <div class="page-title-box">
+            <div>
+              <h1><i class="fas fa-newspaper"></i> Blog do Síndico & Notícias</h1>
+              <p>Informativos, melhorias e relatórios da gestão condominial</p>
+            </div>
+            ${window.authManager.isAdmin() ? `
+              <button onclick="document.getElementById('modalBlog').classList.add('active')" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nova Publicação
+              </button>
+            ` : ''}
+          </div>
+
+          <div id="blogPostsContainer"></div>
+        </section>
+
+        <!-- ==================== OUVIDORIA / RECLAMAÇÕES VIEW ==================== -->
+        <section class="page-section" id="reclamacoesView">
+          <div class="page-title-box">
+            <div>
+              <h1><i class="fas fa-bullhorn"></i> Ouvidoria, Reclamações & Sugestões</h1>
+              <p>Canal direto para acompanhamento de ocorrências dos moradores</p>
+            </div>
+            <button onclick="document.getElementById('modalReclamacao').classList.add('active')" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Nova Ocorrência
+            </button>
+          </div>
+
+          <div id="reclamacoesListContainer"></div>
+        </section>
+
+        <!-- ==================== UTILIDADES & RESERVAS VIEW ==================== -->
+        <section class="page-section" id="reservasView">
+          <div class="page-title-box">
+            <div>
+              <h1><i class="fas fa-calendar-check"></i> Reservas de Áreas Comuns</h1>
+              <p>Agendamento online do Salão de Festas, Churrasqueira e Espaços</p>
+            </div>
+            <button onclick="document.getElementById('modalReserva').classList.add('active')" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Nova Reserva
+            </button>
+          </div>
+
+          <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+            <div class="card">
+              <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=500&q=80" style="width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1rem;" />
+              <h3>Salão de Festas</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Capacidade: 80 pessoas | Taxa: R$ 150,00</p>
+            </div>
+
+            <div class="card">
+              <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80" style="width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1rem;" />
+              <h3>Churrasqueira Gourmet</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Capacidade: 25 pessoas | Taxa: R$ 80,00</p>
+            </div>
+
+            <div class="card">
+              <img src="https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=500&q=80" style="width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1rem;" />
+              <h3>Quiosque da Piscina</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Uso comunitário | Sem taxa</p>
+            </div>
+          </div>
+
+          <h3>Minhas Reservas Agendadas</h3>
+          <div id="reservasMinhasList" style="margin-top: 1rem;"></div>
+        </section>
+
+        <!-- ==================== AGENDA VIEW ==================== -->
+        <section class="page-section" id="agendaView">
+          <div class="page-title-box">
+            <h1><i class="fas fa-calendar-alt"></i> Agenda de Eventos & Manutenções</h1>
+            <p>Calendário oficial de compromissos do condomínio Modern Life Residence</p>
+          </div>
+
+          <div class="card">
+            <div id="agendaEventosList"></div>
+          </div>
+        </section>
+
+        <!-- ==================== GALERIA DE FOTOS VIEW ==================== -->
+        <section class="page-section" id="galeriaView">
+          <div class="page-title-box">
+            <h1><i class="fas fa-images"></i> Galeria de Fotos do Condomínio</h1>
+            <p>Conheça a estrutura e instalações do Modern Life Residence</p>
+          </div>
+
+          <div class="gallery-grid" id="galeriaGridContainer"></div>
+        </section>
+
+        <!-- ==================== PAINEL ADMINISTRATIVO VIEW ==================== -->
+        <section class="page-section" id="adminView">
+          <div class="page-title-box">
+            <h1><i class="fas fa-user-shield"></i> Painel Exclusivo da Administração</h1>
+            <p>Aprovação de moradores, gerenciamento de relatórios e configurações</p>
+          </div>
+
+          <!-- Pending Users Approval Section -->
+          <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-user-clock" style="color: var(--color-warning);"></i> Aprovações de Cadastros Pendentes</h3>
+            </div>
+            <div id="adminPendingUsersList"></div>
+          </div>
+
+          <!-- Quick Admin Operations -->
+          <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="card" onclick="document.getElementById('modalBalancete').classList.add('active')" style="cursor: pointer;">
+              <i class="fas fa-file-invoice-dollar" style="font-size: 2rem; color: var(--color-primary); margin-bottom: 0.5rem;"></i>
+              <h4>Cadastrar Balancete</h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">Adicionar fechamento mensal de receitas/despesas.</p>
+            </div>
+
+            <div class="card" onclick="document.getElementById('modalContrato').classList.add('active')" style="cursor: pointer;">
+              <i class="fas fa-file-signature" style="font-size: 2rem; color: #3B82F6; margin-bottom: 0.5rem;"></i>
+              <h4>Cadastrar Contrato</h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">Registrar novo contrato de fornecedor.</p>
+            </div>
+
+            <div class="card" onclick="document.getElementById('modalBlog').classList.add('active')" style="cursor: pointer;">
+              <i class="fas fa-newspaper" style="font-size: 2rem; color: #8B5CF6; margin-bottom: 0.5rem;"></i>
+              <h4>Publicar Comunicado</h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">Criar novo post no Blog do Síndico.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- App Footer -->
+      <footer class="app-footer">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <img src="assets/logo.svg" alt="Modern Life Residence" />
+            <span>Modern Life Residence - Portal da Transparência</span>
+          </div>
+          <div>
+            <span>Síndico: <strong>Carlos Eduardo</strong> | Tel: <strong>(11) 98765-4321</strong> | E-mail: <strong>sindico@modernlife.com.br</strong></span>
+          </div>
+          <div>
+            <span>Versão 2.6.0 | Desenvolvido com HTML5 & Firebase/Sheets ready</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+      <a href="https://wa.me/5511987654321?text=Olá%20Síndico,%20gostaria%20de%20falar%20sobre%20o%20condomínio" target="_blank" class="btn-float-whatsapp" title="Falar com o Síndico no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ==================== MODALS SYSTEM ==================== -->
+
+  <!-- AUTH / LOGIN / CADASTRO MODAL -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="authModalTitle">Acesso ao Portal do Morador</h3>
+        <button class="btn-close" onclick="document.getElementById('authModal').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Toggle Tabs -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+          <button id="tabLoginBtn" class="btn btn-secondary" style="flex: 1;" onclick="
+            document.getElementById('loginFormContainer').style.display='block';
+            document.getElementById('registerFormContainer').style.display='none';
+          ">Entrar (Login)</button>
+          
+          <button id="tabRegisterBtn" class="btn btn-secondary" style="flex: 1;" onclick="
+            document.getElementById('loginFormContainer').style.display='none';
+            document.getElementById('registerFormContainer').style.display='block';
+          ">Novo Cadastro</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginFormContainer">
+          <form onsubmit="
+            event.preventDefault();
+            const res = window.authManager.login(this.email.value, this.senha.value);
+            if(res.success){
+              window.app.showToast('Sucesso', 'Login realizado com sucesso!', 'success');
+              document.getElementById('authModal').classList.remove('active');
+              window.location.reload();
+            } else {
+              alert(res.message);
+            }
+          ">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label>E-mail do Morador</label>
+              <input type="email" name="email" class="form-control" placeholder="ex: morador@modernlife.com.br" required />
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label>Senha</label>
+              <input type="password" name="senha" class="form-control" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar no Portal</button>
+          </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerFormContainer" style="display: none;">
+          <form onsubmit="
+            event.preventDefault();
+            const data = {
+              nome: this.nome.value,
+              apartamento: this.apartamento.value,
+              bloco: this.bloco.value,
+              cpf: this.cpf.value,
+              telefone: this.telefone.value,
+              email: this.email.value,
+              senha: this.senha.value
+            };
+            const res = window.authManager.register(data);
+            alert(res.message);
+            if(res.success){
+              document.getElementById('authModal').classList.remove('active');
+            }
+          ">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Nome Completo</label>
+                <input type="text" name="nome" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label>Apartamento</label>
+                <input type="text" name="apartamento" class="form-control" placeholder="ex: 302" required />
+              </div>
+              <div class="form-group">
+                <label>Bloco / Torre</label>
+                <input type="text" name="bloco" class="form-control" placeholder="ex: A" required />
+              </div>
+              <div class="form-group">
+                <label>CPF</label>
+                <input type="text" name="cpf" class="form-control" placeholder="000.000.000-00" required />
+              </div>
+              <div class="form-group">
+                <label>Telefone / WhatsApp</label>
+                <input type="text" name="telefone" class="form-control" placeholder="(11) 99999-9999" required />
+              </div>
+              <div class="form-group full-width">
+                <label>E-mail</label>
+                <input type="email" name="email" class="form-control" required />
+              </div>
+              <div class="form-group full-width">
+                <label>Criar Senha</label>
+                <input type="password" name="senha" class="form-control" required />
+              </div>
+            </div>
+            <div style="background: var(--color-primary-soft); padding: 0.75rem; border-radius: var(--radius-md); margin: 1rem 0; font-size: 0.8rem; color: var(--color-primary-dark);">
+              <i class="fas fa-info-circle"></i> Após o cadastro, o Administrador/Síndico irá aprovar seu perfil para liberar o acesso ao portal.
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Finalizar Cadastro</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL NOVA OCORKÊNCIA / RECLAMAÇÃO -->
+  <div class="modal-overlay" id="modalReclamacao">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Abrir Ocorrência / Sugestão</h3>
+        <button class="btn-close" onclick="document.getElementById('modalReclamacao').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="
+          event.preventDefault();
+          const user = window.authManager.getCurrentUser() || { nome: 'Morador Visitante', id: 'guest', apartamento: '101 A' };
+          const ticket = {
+            moradorId: user.id,
+            moradorNome: user.nome,
+            apartamento: `${user.apartamento}`,
+            categoria: this.categoria.value,
+            assunto: this.assunto.value,
+            descricao: this.descricao.value,
+            data: new Date().toISOString().split('T')[0],
+            status: 'Recebido'
+          };
+          window.dbStore.add('RECLAMACOES', ticket);
+          window.app.showToast('Enviado', 'Ocorrência registrada no sistema!', 'success');
+          document.getElementById('modalReclamacao').classList.remove('active');
+          window.app.renderReclamacoes();
+        ">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Tipo de Ocorrência</label>
+            <select name="categoria" class="form-select" required>
+              <option value="Reclamação">Reclamação</option>
+              <option value="Sugestão">Sugestão</option>
+              <option value="Elogio">Elogio</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Assunto</label>
+            <input type="text" name="assunto" class="form-control" placeholder="ex: Barulho excessivo na garagem" required />
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Descrição Detalhada</label>
+            <textarea name="descricao" class="form-control" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar para a Administração</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL NOVA RESERVA -->
+  <div class="modal-overlay" id="modalReserva">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Reservar Área Comum</h3>
+        <button class="btn-close" onclick="document.getElementById('modalReserva').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="
+          event.preventDefault();
+          const user = window.authManager.getCurrentUser() || { nome: 'Morador', apartamento: '302 A' };
+          const res = {
+            espaco: this.espaco.value,
+            moradorNome: user.nome,
+            apartamento: user.apartamento,
+            data: this.data.value,
+            periodo: this.periodo.value,
+            status: 'Confirmada'
+          };
+          window.dbStore.add('RESERVAS', res);
+          window.app.showToast('Reservado', 'Reserva efetuada com sucesso!', 'success');
+          document.getElementById('modalReserva').classList.remove('active');
+          window.app.renderReservas();
+        ">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Escolha o Espaço</label>
+            <select name="espaco" class="form-select" required>
+              <option value="Salão de Festas">Salão de Festas</option>
+              <option value="Churrasqueira Gourmet">Churrasqueira Gourmet</option>
+              <option value="Quiosque Piscina">Quiosque Piscina</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Data Desejada</label>
+            <input type="date" name="data" class="form-control" required />
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Horário / Período</label>
+            <input type="text" name="periodo" class="form-control" placeholder="ex: 12:00 às 18:00" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Confirmar Reserva</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ADMIN: CADASTRAR BALANCETE -->
+  <div class="modal-overlay" id="modalBalancete">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Cadastrar Balancete Mensal</h3>
+        <button class="btn-close" onclick="document.getElementById('modalBalancete').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="
+          event.preventDefault();
+          window.adminPanel.saveBalancete({
+            mes: this.mes.value,
+            ano: this.ano.value,
+            receita: this.receita.value,
+            despesa: this.despesa.value,
+            status: 'Aprovado pelo Conselho'
+          });
+          document.getElementById('modalBalancete').classList.remove('active');
+        ">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Mês</label>
+              <input type="text" name="mes" class="form-control" placeholder="ex: Julho" required />
+            </div>
+            <div class="form-group">
+              <label>Ano</label>
+              <input type="number" name="ano" class="form-control" value="2026" required />
+            </div>
+            <div class="form-group">
+              <label>Receita Total (R$)</label>
+              <input type="number" step="0.01" name="receita" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Despesa Total (R$)</label>
+              <input type="number" step="0.01" name="despesa" class="form-control" required />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Salvar e Publicar Balancete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ADMIN: CADASTRAR CONTRATO -->
+  <div class="modal-overlay" id="modalContrato">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Cadastrar Novo Contrato</h3>
+        <button class="btn-close" onclick="document.getElementById('modalContrato').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="
+          event.preventDefault();
+          window.adminPanel.saveContrato({
+            empresa: this.empresa.value,
+            objeto: this.objeto.value,
+            valorMensal: this.valorMensal.value,
+            vigencia: this.vigencia.value,
+            status: 'Ativo'
+          });
+          document.getElementById('modalContrato').classList.remove('active');
+        ">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Empresa / Prestador</label>
+            <input type="text" name="empresa" class="form-control" required />
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Objeto / Serviço Contratado</label>
+            <input type="text" name="objeto" class="form-control" required />
+          </div>
+          <div class="form-grid" style="margin-bottom: 1.5rem;">
+            <div class="form-group">
+              <label>Valor Mensal (R$)</label>
+              <input type="number" step="0.01" name="valorMensal" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Vigência</label>
+              <input type="text" name="vigencia" class="form-control" placeholder="ex: 2026 a 2027" required />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Salvar Contrato</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ADMIN: PUBLICAR BLOG -->
+  <div class="modal-overlay" id="modalBlog">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Publicar Comunicado no Blog</h3>
+        <button class="btn-close" onclick="document.getElementById('modalBlog').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="
+          event.preventDefault();
+          window.adminPanel.saveBlogPost({
+            titulo: this.titulo.value,
+            conteudo: this.conteudo.value,
+            imagem: this.imagem.value
+          });
+          document.getElementById('modalBlog').classList.remove('active');
+        ">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Título do Comunicado</label>
+            <input type="text" name="titulo" class="form-control" required />
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>URL da Imagem (Opcional)</label>
+            <input type="text" name="imagem" class="form-control" placeholder="https://..." />
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label>Conteúdo da Mensagem</label>
+            <textarea name="conteudo" class="form-control" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Publicar Notícia</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(() => {
+        console.log('PWA Service Worker Registrado com Sucesso!');
+      }).catch(err => console.log('Erro SW:', err));
+    }
+  </script>
+</body>
+</html>

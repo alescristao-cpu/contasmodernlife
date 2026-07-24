@@ -6,7 +6,9 @@
   <title>Modern Life Residence - Portal da Transparência & Prestação de Contas</title>
   <meta name="description" content="Portal oficial de transparência, prestação de contas, balancetes e gestão do condomínio Modern Life Residence." />
   
-  <!-- PWA Manifest & Icons -->
+  <!-- Favicon & PWA Icons -->
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/logo.svg" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#2E6B42" />
 
@@ -912,7 +914,7 @@
   <!-- PWA Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').then(() => {
+      navigator.serviceWorker.register('sw.js').then(() => {
         console.log('PWA Service Worker Registrado com Sucesso!');
       }).catch(err => console.log('Erro SW:', err));
     }

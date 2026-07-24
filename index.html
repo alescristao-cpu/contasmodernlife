@@ -14,7 +14,7 @@
 
   <!-- Fonts & Icon Libraries -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=2.6" />
 
   <!-- Chart.js for Financial Data Visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -904,17 +904,17 @@
   </div>
 
   <!-- Application Scripts -->
-  <script src="js/data.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/charts.js"></script>
-  <script src="js/export.js"></script>
-  <script src="js/admin.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/data.js?v=2.6"></script>
+  <script src="js/auth.js?v=2.6"></script>
+  <script src="js/charts.js?v=2.6"></script>
+  <script src="js/export.js?v=2.6"></script>
+  <script src="js/admin.js?v=2.6"></script>
+  <script src="js/app.js?v=2.6"></script>
 
   <!-- PWA Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(() => {
+      navigator.serviceWorker.register('sw.js?v=2.6').then(() => {
         console.log('PWA Service Worker Registrado com Sucesso!');
       }).catch(err => console.log('Erro SW:', err));
     }

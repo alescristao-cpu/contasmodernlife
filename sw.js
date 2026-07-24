@@ -1,16 +1,16 @@
-const CACHE_NAME = 'modern-life-v1';
+const CACHE_NAME = 'modern-life-v2';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './css/styles.css',
-  './js/app.js',
-  './js/auth.js',
-  './js/data.js',
-  './js/charts.js',
-  './js/export.js',
-  './js/admin.js',
-  './assets/logo.svg',
-  './manifest.json'
+  '/',
+  '/index.html',
+  '/css/styles.css',
+  '/js/data.js',
+  '/js/auth.js',
+  '/js/charts.js',
+  '/js/export.js',
+  '/js/admin.js',
+  '/js/app.js',
+  '/assets/logo.svg',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,15 +39,8 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        if (event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html');
-        }
-      });
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
     })
   );
 });
